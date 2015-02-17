@@ -7,9 +7,9 @@
  *
  * Main module of the application.
  */
-angular.module('unchatbar-stream').run(['$rootScope', 'PhoneBook', 'Profile','DataConnection',
-    function ($rootScope, Stream) {
-        Stream.initStorage();
+angular.module('unchatbar-stream').run(['$rootScope',
+    function ($rootScope ) {
+
 
 
     }

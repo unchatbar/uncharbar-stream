@@ -37,12 +37,9 @@
 <!-- build:js(.) scripts/vendor.js -->
 <!-- bower:js -->
 <script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/peerjs/peer.js"></script>
 <script src="bower_components/ngstorage/ngStorage.js"></script>
 <script src="bower_components/lodash/dist/lodash.compat.js"></script>
-<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="bower_components/angularjs-dropdown-multiselect/src/angularjs-dropdown-multiselect.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/peerjs/peer.js"></script>
 <script src="bower_components/unchatbar-user/app/scripts/app.js"></script>
 <script src="bower_components/unchatbar-user/app/scripts/run.js"></script>
 <script src="bower_components/unchatbar-user/app/scripts/template.js"></script>
@@ -78,10 +75,10 @@
 
 
 <script>
-    angular.module('unchatbar-stream').run(['$state','Broker',
-        function ($state, Broker) {
+    angular.module('unchatbar-stream').run(['Broker',
+        function ( Broker) {
             Broker.connectServer();
-            $state.go('contact');
+
         }]);
 </script>
 </body>

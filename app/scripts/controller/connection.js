@@ -36,6 +36,13 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          */
         $scope.streamsWaitingForClientAnswer = [];
 
+        /**
+         * @ngdoc methode
+         * @name ownStream
+         * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @return {Object} own stream object
+         */
+        $scope.ownStream = null;
 
         /**
          * @ngdoc methode
@@ -96,7 +103,6 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * @ngdoc methode
          * @name getStreamsWaitingForClientAnswer
          * @methodOf unchatbar-stream.controller:unStreamConnection
-         * @return {Array} users list of user clientPeer id
          * @description
          *
          * get list of streams, waiting for client answer
@@ -104,6 +110,19 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          */
         $scope.getStreamsWaitingForClientAnswer = function (users) {
             $scope.streamsWaitingForClientAnswer = unStreamConnection.getList('waitingForClientAnswer');
+        };
+
+        /**
+         * @ngdoc methode
+         * @name getOwnStream
+         * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @description
+         *
+         * get own stream object
+         *
+         */
+        $scope.getOwnStream = function (users) {
+            $scope.ownStream = unStreamConnection.getOwnStream();
         };
     }
 ]);

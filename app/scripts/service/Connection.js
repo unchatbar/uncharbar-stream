@@ -24,6 +24,16 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
 
             /**
              * @ngdoc methode
+             * @name ownStream
+             * @propertyOf unchatbar-stream.unStreamConnection
+             * @private
+             * @returns {Object} own stream Object
+             *
+             */
+            ownStream: null,
+
+            /**
+             * @ngdoc methode
              * @name call
              * @methodOf unchatbar-stream.unStreamConnection
              * @params {Array} users list of users
@@ -119,14 +129,26 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * @return {Object} promise for own stream object
              * @description
              *
-             * get own stream
+             * create own stream
              *
              */
             _createOwnStream : function(type){
 
+            },
+
+            /**
+             * @ngdoc methode
+             * @name getOwnStream
+             * @methodOf unchatbar-stream.unStreamConnection
+             * @return {Object} own stream object
+             * @description
+             *
+             * get own stream
+             *
+             */
+            getOwnStream : function(){
+                return api.ownStream;
             }
-
-
         };
 
         return api;
