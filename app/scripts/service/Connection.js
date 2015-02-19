@@ -65,6 +65,7 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * @name answer
              * @methodOf unchatbar-stream.unStreamConnection
              * @params {String} peerId client peerId
+             * @params {String} stream type [video/audio]
              * @description
              *
              * answer to client stream

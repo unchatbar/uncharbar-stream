@@ -63,6 +63,21 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * @ngdoc methode
          * @name closeStream
          * @params {String} peerId client peerId
+         * @params {String} stream type [video/audio]
+         * @description
+         *
+         * close stream connection
+         *
+         */
+        $scope.answer = function (peerId,type) {
+            unStreamConnection.answer(peerId,type);
+        };
+
+
+        /**
+         * @ngdoc methode
+         * @name closeStream
+         * @params {String} peerId client peerId
          * @description
          *
          * close stream connection

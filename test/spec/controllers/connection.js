@@ -23,10 +23,18 @@ describe('Controller: phoneBook', function () {
             streamCTRL();
         });
         describe('callUser', function () {
-            it('should call `unStreamConnection.close` with peerId,type,metaData ', function () {
+            it('should call `unStreamConnection.call` with peerId,type,metaData ', function () {
                 spyOn(unStreamConnectionService, 'call').and.returnValue(true);
                 scope.callUser('peerId', 'type', {metaData: 'meta'});
                 expect(unStreamConnectionService.call).toHaveBeenCalledWith('peerId', 'type', {metaData: 'meta'});
+            });
+        });
+
+        describe('answer', function () {
+            it('should call `unStreamConnection.answer` with peerId,type,metaData ', function () {
+                spyOn(unStreamConnectionService, 'answer').and.returnValue(true);
+                scope.answer('peerId', 'type');
+                expect(unStreamConnectionService.answer).toHaveBeenCalledWith('peerId', 'type');
             });
         });
 
