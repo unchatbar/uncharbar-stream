@@ -53,8 +53,7 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * call to client
              *
              */
-            call: function
-                (peerId, type, metaData) {
+            call: function (peerId, type, metaData) {
                 this._createOwnStream(type).then(function (stream) {
                     var connection = Broker.connectStream(peerId, stream, metaData);
                     api.add(connection, 'waitingForClientAnswer');
@@ -111,8 +110,8 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
                     connection: connection
                 };
 
-                _.forEach(api.metaIndexFields,function(field){
-                    stream[field] =  connection.metaData[field] || '';
+                _.forEach(api.metaIndexFields, function (field) {
+                    stream[field] = connection.metaData[field] || '';
                 });
 
                 api.streams.push(stream);

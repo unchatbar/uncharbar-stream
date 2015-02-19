@@ -14,11 +14,11 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
     function ($scope, unStreamConnection) {
         /**
          * @ngdoc methode
-         * @name streamList
+         * @name openStream
          * @methodOf unchatbar-stream.controller:unStreamConnection
-         * @return {Array} list of stream
+         * @return {Array} list of open stream
          */
-        $scope.streamList = [];
+        $scope.openStream = [];
 
         /**
          * @ngdoc methode
@@ -47,16 +47,16 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
         /**
          * @ngdoc methode
          * @name getOpenStreams
-         * @params {String} client peer id
+         * @params {String} peerId client peer id
          * @params {String} stream type [video/audio]
-         * @params {Object} metadata for stream
+         * @params {Object} metadata for stream (e.g channel)
          * @description
          *
          * call to user
          *
          */
-        $scope.callUser = function (users, type,metaData) {
-            unStreamConnection.call(users, type,metaData);
+        $scope.callUser = function (peerId, type,metaData) {
+            unStreamConnection.call(peerId, type,metaData);
         };
 
         /**
@@ -77,53 +77,69 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * @ngdoc methode
          * @name getStreamsWaitingForAnswer
          * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @params {String} channel id of channel
          * @description
          *
          * get list of streams, waiting for your answer
          *
          */
-        $scope.getStreamsWaitingForAnswer = function () {
-            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList('waitingForYourAnswer');
+        $scope.getStreamsWaitingForAnswer = function (channel) {
+            var filter = {status : 'waitingForYourAnswer'};
+            if (channel) {
+                filter.channel = channel;
+            }
+            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList(filter);
         };
 
         /**
          * @ngdoc methode
          * @name getOpenStreams
          * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @params {String} channel id of channel
          * @return {Array} users list of user clientPeer id
          * @description
          *
          * get list of open streams
          *
          */
-        $scope.getOpenStreams = function (users) {
-            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList('open');
+        $scope.getOpenStreams = function (channel) {
+            var filter = {status : 'open'};
+            if (channel) {
+                filter.channel = channel;
+            }
+            $scope.openStream = unStreamConnection.getList(filter);
         };
 
         /**
          * @ngdoc methode
          * @name getStreamsWaitingForClientAnswer
          * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @params {String} channel id of channel
          * @description
          *
          * get list of streams, waiting for client answer
          *
          */
-        $scope.getStreamsWaitingForClientAnswer = function (users) {
-            $scope.streamsWaitingForClientAnswer = unStreamConnection.getList('waitingForClientAnswer');
+        $scope.getStreamsWaitingForClientAnswer = function (channel) {
+            var filter = {status : 'waitingForClientAnswer'};
+            if (channel) {
+                filter.channel = channel;
+            }
+            $scope.streamsWaitingForClientAnswer = unStreamConnection.getList(filter);
         };
 
         /**
          * @ngdoc methode
          * @name getOwnStream
          * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @params {String} type type of own stream (e.g video/audio)
          * @description
          *
          * get own stream object
          *
          */
-        $scope.getOwnStream = function (users) {
-            $scope.ownStream = unStreamConnection.getOwnStream('video');
+        $scope.getOwnStream = function (type) {
+            $scope.ownStream = unStreamConnection.getOwnStream(type);
         };
     }
 ]);

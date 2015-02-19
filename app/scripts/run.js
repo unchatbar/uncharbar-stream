@@ -7,9 +7,11 @@
  *
  * Main module of the application.
  */
-angular.module('unchatbar-stream').run(['$rootScope',
-    function ($rootScope ) {
-
+angular.module('unchatbar-stream').run(['$rootScope','unStreamConnection',
+    function ($rootScope,unStreamConnection ) {
+        $rootScope.$on('BrokerPeerCall',function(call){
+            unStreamConnection.add(call.client,'waitingForYourAnswer');
+        });
 
 
     }
