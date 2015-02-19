@@ -47,6 +47,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
         /**
          * @ngdoc methode
          * @name getOpenStreams
+         * @methodOf unchatbar-stream.controller:unStreamConnection
          * @params {String} peerId client peer id
          * @params {String} stream type [video/audio]
          * @params {Object} metadata for stream (e.g channel)
@@ -62,6 +63,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
         /**
          * @ngdoc methode
          * @name closeStream
+         * @methodOf unchatbar-stream.controller:unStreamConnection
          * @params {String} peerId client peerId
          * @params {String} stream type [video/audio]
          * @description
@@ -77,6 +79,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
         /**
          * @ngdoc methode
          * @name closeStream
+         * @methodOf unchatbar-stream.controller:unStreamConnection
          * @params {String} peerId client peerId
          * @description
          *
