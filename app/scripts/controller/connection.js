@@ -47,15 +47,16 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
         /**
          * @ngdoc methode
          * @name getOpenStreams
-         * @params {Array} users list of users
-         * @params {type} stream type [video/audio]
+         * @params {String} client peer id
+         * @params {String} stream type [video/audio]
+         * @params {Object} metadata for stream
          * @description
          *
          * call to user
          *
          */
-        $scope.callUser = function (users, type) {
-            unStreamConnection.call(users, type);
+        $scope.callUser = function (users, type,metaData) {
+            unStreamConnection.call(users, type,metaData);
         };
 
         /**

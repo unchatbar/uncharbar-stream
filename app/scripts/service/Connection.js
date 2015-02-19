@@ -8,8 +8,8 @@
  * # peer
  * stream connection
  */
-angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q',
-    function ($rootScope, $q) {
+angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q','Broker',
+    function ($rootScope, $q, Broker) {
         var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
             /**
