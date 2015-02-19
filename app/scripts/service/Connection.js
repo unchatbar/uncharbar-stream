@@ -8,7 +8,7 @@
  * # peer
  * stream connection
  */
-angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q','Broker',
+angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q', 'Broker',
     function ($rootScope, $q, Broker) {
         var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
@@ -22,6 +22,15 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              */
             streams: [],
 
+            /**
+             * @ngdoc methode
+             * @name metaIndexFields
+             * @propertyOf unchatbar-stream.unStreamConnection
+             * @private
+             * @returns {Array} list of index fields in connection - metaData for searching
+             *
+             */
+            metaIndexFields: ['channel'],
             /**
              * @ngdoc methode
              * @name ownStream
@@ -44,10 +53,11 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * call to client
              *
              */
-            call: function (peerId, type, metaData) {
+            call: function
+                (peerId, type, metaData) {
                 this._createOwnStream(type).then(function (stream) {
                     var connection = Broker.connectStream(peerId, stream, metaData);
-                    api.add(connection,'waitingForClientAnswer');
+                    api.add(connection, 'waitingForClientAnswer');
                 });
             },
 
@@ -61,9 +71,9 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * answer to client stream
              *
              */
-            answer: function (peerId,type) {
+            answer: function (peerId, type) {
                 this._createOwnStream(type).then(function (stream) {
-                    var index = _.findIndex(api.streams, { 'peerId': peerId});
+                    var index = _.findIndex(api.streams, {'peerId': peerId});
                     api.streams[index].connection.answer(stream);
                 });
             },
@@ -79,8 +89,8 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             close: function (peerId) {
-                var index = _.findIndex(api.streams, { 'peerId': this.peer});
-                api.streams[this.peer].connection.close();
+                var index = _.findIndex(api.streams, {'peerId': peerId});
+                api.streams[index].connection.close();
             },
 
             /**
@@ -95,14 +105,24 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             add: function (connection, status) {
-                api.streams.push({peerId: connection.peer, connection: connection, status: status});
-                connection.on('stream', function (stream) {
-                    var index = _.findIndex(api.streams, { 'peerId': this.peer});
-                    api.streams[this.peer].status = 'open';
+                var stream = {
+                    peerId: connection.peer,
+                    status: status,
+                    connection: connection
+                };
+
+                _.forEach(api.metaIndexFields,function(field){
+                    stream[field] =  connection.metaData[field] || '';
                 });
-                call.on('close', function () {
-                    var index = _.findIndex(api.streams, { 'peerId': this.peer});
-                    api.streams.splice(this.peer,1);
+
+                api.streams.push(stream);
+                connection.on('stream', function (stream) {
+                    var index = _.findIndex(api.streams, {'peerId': this.peer});
+                    api.streams[index].status = 'open';
+                });
+                connection.on('close', function () {
+                    var index = _.findIndex(api.streams, {'peerId': this.peer});
+                    api.streams.splice(this.peer, 1);
                 });
             },
 
@@ -110,15 +130,16 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * @ngdoc methode
              * @name close
              * @methodOf unchatbar-stream.unStreamConnection
-             * @params {status} status status of stream
+             * @params {Objject} filter filter by status or channel
+             * @params {String} channel name of channel
              * @return {Array} list of streams
              * @description
              *
              * get a list of stream filter by user and status
              *
              */
-            getList: function (status) {
-                return _.filter(api.streams,  { status: status});
+            getList: function (filter) {
+                return _.filter(api.streams, filter);
             },
 
             /**
@@ -193,4 +214,5 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
 
         return api;
     }
-]);
+])
+;
