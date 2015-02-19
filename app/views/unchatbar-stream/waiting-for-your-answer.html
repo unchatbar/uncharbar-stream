@@ -1,0 +1,9 @@
+<div >
+    <div data-ng-repeat="connection in streamsWaitingForYourAnswer">
+        {{userMap[connection.peerId].label}}
+        <button type="button" class="btn btn-default" data-ng-click="answer(connection.peerId,'video')">video</button>
+        <button type="button" class="btn btn-default" data-ng-click="answer(connection.peerId,'audio')">audio call</button>
+        <button type="button" class="btn btn-default" data-ng-click="close(connection.peerId)">cancel</button>
+        <hr>
+    </div>
+</div>

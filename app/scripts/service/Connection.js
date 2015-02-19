@@ -54,10 +54,14 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             call: function (peerId, type, metaData) {
-                this._createOwnStream(type).then(function (stream) {
-                    var connection = Broker.connectStream(peerId, stream, metaData);
-                    api.add(connection, 'waitingForClientAnswer');
-                });
+                if (Broker.getPeerId() !== peerId) {
+                    this._createOwnStream(type).then(function (stream) {
+                        if(-1 === _.findIndex(api.streams, {'peerId': peerId})) {
+                            var connection = Broker.connectStream(peerId, stream, metaData);
+                            api.add(connection, 'waitingForClientAnswer');
+                        }
+                    });
+                }
             },
 
             /**
@@ -91,6 +95,8 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
             close: function (peerId) {
                 var index = _.findIndex(api.streams, {'peerId': peerId});
                 api.streams[index].connection.close();
+                api.streams.splice(index, 1);
+                api._broadcastStreamUpdate();
             },
 
             /**
@@ -110,21 +116,23 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
                     status: status,
                     connection: connection
                 };
-
+                var options = connection.options || {};
                 _.forEach(api.metaIndexFields, function (field) {
-                    stream[field] = connection.metaData[field] || '';
+                    stream[field] = options.metadata[field] || '';
                 });
 
                 api.streams.push(stream);
+                api._broadcastStreamUpdate();
                 connection.on('stream', function (stream) {
                     var index = _.findIndex(api.streams, {'peerId': this.peer});
                     api.streams[index].status = 'open';
-                });
-                connection.on('close', function () {
-                    var index = _.findIndex(api.streams, {'peerId': this.peer});
-                    api.streams.splice(this.peer, 1);
+                    console.log(api.streams);
+                    api._broadcastStreamUpdate();
+                    $rootScope.$apply();
                 });
             },
+
+
 
             /**
              * @ngdoc methode
@@ -168,6 +176,18 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
                         },
                         function (stream) {
                             api.ownStream[type] = stream;
+                            /**
+                             * @ngdoc event
+                             * @name StreamAddOwn
+                             * @eventOf unchatbar-stream.unStreamConnection
+                             * @eventType broadcast on root scope
+                             * @description
+                             *
+                             * new own stream created
+                             *
+                             */
+                            $rootScope.$broadcast('StreamAddOwn', {});
+                            $rootScope.$apply();
                             defer.resolve(stream);
                         }.bind(this),
                         function (error) {
@@ -209,6 +229,28 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              */
             getOwnStream: function (type) {
                 return api.ownStream[type] || null;
+            },
+
+            /**
+             * @ngdoc event
+             * @name StreamUpdate
+             * @eventOf unchatbar-stream.unStreamConnection
+             * @eventType broadcast on root scope
+             * @description
+             *
+             * event for stream update
+             *
+             */
+            _broadcastStreamUpdate: function () {
+                if(api.streams.length === 0) {
+                    api.ownStream = {};
+                    $rootScope.$broadcast('StreamRemoveOwn',{});
+                }
+                $rootScope.$broadcast('StreamUpdate',
+                    {
+                        waitingClients: api.getList({status: 'waitingForYourAnswer'})
+                    }
+                );
             }
         };
 

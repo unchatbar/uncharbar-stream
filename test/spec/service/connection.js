@@ -19,29 +19,55 @@ describe('Serivce: phoneBook', function () {
                     defer.resolve('ownStream');
                     return defer.promise;
                 });
+
                 spyOn(BrokerService, 'connectStream').and.returnValue('streamConnection');
                 spyOn(unStreamConnectionService, 'add').and.returnValue(true);
             }));
-            it('should call `unStreamConnection._createOwnStream` with `type`', function () {
-                unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
+            describe('call peerId is own peer id', function () {
+                beforeEach(function () {
+                    spyOn(BrokerService, 'getPeerId').and.returnValue('ownPeerId');
+                });
+                it('should call `unStreamConnection._createOwnStream` with `type`', function () {
+                    unStreamConnectionService.call('ownPeerId', 'streamType', {meta: 'data'});
 
-                expect(unStreamConnectionService._createOwnStream).toHaveBeenCalledWith('streamType');
+                    expect(unStreamConnectionService._createOwnStream).not.toHaveBeenCalledWith('streamType');
+                });
+
             });
+            describe('call peerId is not own peer id', function () {
+                beforeEach(function () {
+                    spyOn(BrokerService, 'getPeerId').and.returnValue('ownPeerId');
+                });
+                it('should call `unStreamConnection._createOwnStream` with `type`', function () {
+                    unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
 
-            it('should call `Broker.connectStream` with `peerId`, `ownStream` and `metaData`', function () {
-                unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
+                    expect(unStreamConnectionService._createOwnStream).toHaveBeenCalledWith('streamType');
+                });
 
-                rootScope.$apply();
+                it('should call `Broker.connectStream` with `peerId`, `ownStream` and `metaData`', function () {
+                    unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
 
-                expect(BrokerService.connectStream).toHaveBeenCalledWith('peerId', 'ownStream', {meta: 'data'});
-            });
+                    rootScope.$apply();
 
-            it('should call `unStreamConnection.add` with `connection` and `waitingForClientAnswer`', function () {
-                unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
+                    expect(BrokerService.connectStream).toHaveBeenCalledWith('peerId', 'ownStream', {meta: 'data'});
+                });
 
-                rootScope.$apply();
+                it('should call `unStreamConnection.add` with `connection` and `waitingForClientAnswer`', function () {
+                    unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
 
-                expect(unStreamConnectionService.add).toHaveBeenCalledWith('streamConnection', 'waitingForClientAnswer');
+                    rootScope.$apply();
+
+                    expect(unStreamConnectionService.add).toHaveBeenCalledWith('streamConnection', 'waitingForClientAnswer');
+                });
+
+                it('should not call `Broker.connectStream` when `peerId`exists in unStreamConnection.streams', function () {
+                    unStreamConnectionService.streams = [{peerId: 'peerId'}];
+                    unStreamConnectionService.call('peerId', 'streamType', {meta: 'data'});
+
+                    rootScope.$apply();
+
+                    expect(BrokerService.connectStream).not.toHaveBeenCalled();
+                });
             });
         });
         describe('answer', function () {
@@ -94,7 +120,7 @@ describe('Serivce: phoneBook', function () {
             it('should remove peer from unStreamConnection.streams', function () {
                 unStreamConnectionService.close('peerId');
 
-                expect(unStreamConnectionService.streams[1].connection.close).toHaveBeenCalled();
+                expect(unStreamConnectionService.streams).toEqual([{peerId: 'otherClient'}]);
             });
         });
         describe('add', function () {
@@ -103,8 +129,10 @@ describe('Serivce: phoneBook', function () {
             beforeEach(function () {
                 connectionMock = {
                     peer: 'clientPeerId',
-                    metaData: {
-                        channel: 'streamChannel'
+                    options: {
+                        metadata: {
+                            channel: 'streamChannel'
+                        }
                     },
                     on: function () {
 
@@ -135,13 +163,7 @@ describe('Serivce: phoneBook', function () {
                 expect(unStreamConnectionService.streams[0].status).toBe('open');
 
             });
-            it('should change status to `open` after event `stream` triggerd ', function () {
-                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
 
-                connectionMock.close();
-
-                expect(unStreamConnectionService.streams).toEqual([]);
-            });
         });
         describe('getList', function () {
             it('should return a filter list by status', function () {
@@ -170,7 +192,7 @@ describe('Serivce: phoneBook', function () {
             });
         });
 
-        describe('createOwnStream', function () {
+        describe('_createOwnStream', function () {
             describe('userMedia api is not available', function () {
                 beforeEach(function () {
                     spyOn(unStreamConnectionService, '_getUserMediaApi').and.returnValue(0);
@@ -214,7 +236,7 @@ describe('Serivce: phoneBook', function () {
                     unStreamConnectionService._createOwnStream('video');
                     rootScope.$apply();
                     expect(fakeUserMedia.api).toHaveBeenCalledWith(
-                        {video : true,audio : true},
+                        {video: true, audio: true},
                         jasmine.any(Function),
                         jasmine.any(Function)
                     );
@@ -224,7 +246,7 @@ describe('Serivce: phoneBook', function () {
                     unStreamConnectionService._createOwnStream('audio');
                     rootScope.$apply();
                     expect(fakeUserMedia.api).toHaveBeenCalledWith(
-                        {video : false,audio : true},
+                        {video: false, audio: true},
                         jasmine.any(Function),
                         jasmine.any(Function)
                     );
@@ -251,8 +273,14 @@ describe('Serivce: phoneBook', function () {
                         unStreamConnectionService._createOwnStream('video').then(function (stream) {
                             streamReturn = stream;
                         });
+                        spyOn(rootScope,'$broadcast').and.returnValue(true);
                     });
-                    it('should store video stzream to `Stream.ownStream`', function () {
+                    it('should broadcast `StreamAddOwn`', function () {
+                        userMediaSuccess('stream');
+                        expect(rootScope.$broadcast).toHaveBeenCalledWith('StreamAddOwn',{});
+                    });
+
+                    it('should store video stream to `Stream.ownStream`', function () {
                         userMediaSuccess('stream');
                         expect(unStreamConnectionService.ownStream).toEqual({video: 'stream'});
                     });
@@ -265,17 +293,54 @@ describe('Serivce: phoneBook', function () {
             });
         });
 
-        describe('getOwnStream' , function(){
-            it('shout return null, when type isn\'t defined' , function(){
+        describe('getOwnStream', function () {
+            it('shout return null, when type isn\'t defined', function () {
                 expect(unStreamConnectionService.getOwnStream('text')).toBe(null);
             });
 
-            it('shout return defined data from `api.ownStream[type]`' , function(){
+            it('shout return defined data from `api.ownStream[type]`', function () {
                 unStreamConnectionService.ownStream = {
-                    'test' : 'data'
+                    'test': 'data'
                 };
                 expect(unStreamConnectionService.getOwnStream('test')).toBe('data');
             });
+        });
+
+        describe('_broadcastStreamUpdate', function () {
+            beforeEach(function () {
+                spyOn(rootScope, '$broadcast').and.returnValue(true);
+                spyOn(unStreamConnectionService, 'getList').and.returnValue('testValue');
+            });
+            it('should call `unStreamConnection.unStreamConnectionService` with status: `waitingForYourAnswer`', function () {
+                unStreamConnectionService._broadcastStreamUpdate();
+                rootScope.$apply();
+
+                expect(unStreamConnectionService.getList).toHaveBeenCalledWith({status: 'waitingForYourAnswer'});
+            });
+            it('should call `$rootScope.$broadcast` with `StreamUpdate` and return value from unStreamConnection.getList', function () {
+                unStreamConnectionService._broadcastStreamUpdate();
+                rootScope.$apply();
+
+                expect(rootScope.$broadcast).toHaveBeenCalledWith('StreamUpdate', {waitingClients: 'testValue'});
+            });
+            describe('no streams open or waiting' , function(){
+               beforeEach(function(){
+                   unStreamConnectionService.ownStream = {test : 'data'};
+                   unStreamConnectionService.streams = [];
+               });
+                it('should call `$rootScope.$broadcast` with `StreamUpdate` and return value from unStreamConnection.getList', function () {
+                    unStreamConnectionService._broadcastStreamUpdate();
+                    rootScope.$apply();
+
+                    expect(rootScope.$broadcast).toHaveBeenCalledWith('StreamRemoveOwn', {});
+                });
+                it('shoud remove ownStream ' , function() {
+                    unStreamConnectionService._broadcastStreamUpdate();
+
+                    expect(unStreamConnectionService.ownStream).toEqual({});
+                });
+            });
+
         });
 
     });

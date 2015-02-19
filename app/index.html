@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width">
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="bower_components/unchatbar-user/app/styles/custom.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="bower_components/unchatbar-user/app/styles/custom.css"/>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -19,7 +19,58 @@
     <!-- endbuild -->
 </head>
 <body>
+<un-connection-peer-id></un-connection-peer-id>
 
+<div class="container">
+    <h1>DEMO (Demo Controller : unDataChatDemo)</h1>
+
+    <div ng-controller="unDataChatDemo">
+        <div class="row">
+            <div class="col-md-5">
+                <select ng-options="item.name for item in channelList" ng-model="activeChannel"></select>
+
+                <div ng-repeat="user in userList[activeChannel.name]">
+                    <b>{{user.id}}</b>/{{user.label}} <br/>
+                </div>
+            </div>
+            <div class="col-md-7">
+                Add user to Channel:
+                <form>
+                    <div class="form-group">
+                        <label for="clientPeer">Client Peer Id</label>
+                        <input type="input" data-ng-model="user.id" class="form-control" id="clientPeer"
+                               placeholder="Enter client peer id">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientName">label</label>
+                        <input type="input" data-ng-model="user.label" class="form-control" id="clientName"
+                               placeholder="Enter client name">
+                    </div>
+                    <button type="submit" class="btn btn-default" ng-click="addUser()">add</button>
+                </form>
+            </div>
+        </div>
+        <h2>open Stream</h2>
+        <un-stream-open data-channel="{{activeChannel.name}}"
+                        data-user-list="userList[activeChannel.name]"></un-stream-open>
+        <hr>
+        <h2>call active channel</h2>
+        <un-stream-call data-channel="{{activeChannel.name}}"
+                        data-user-list="userList[activeChannel.name]"></un-stream-call>
+        <hr>
+        <h2>incomming calls (waiting for your answer)</h2>
+
+        <un-stream-waiting-for-your-answer data-user-map="userListAll"></un-stream-waiting-for-your-answer>
+        <hr>
+        <h2>waiting for client answer</h2>
+        <un-stream-waiting-for-client-answer data-user-map="userListAll"></un-stream-waiting-for-client-answer>
+        <hr>
+        <h2>own Stream</h2>
+        <un-stream-own></un-stream-own>
+
+
+    </div>
+</div>
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>
@@ -69,17 +120,51 @@
 <!-- Controller -->
 <script src="scripts/controller/connection.js"></script>
 <!-- directive -->
+<script src="scripts/directive/call.js"></script>
+<script src="scripts/directive/waiting-for-your-answer.js"></script>
+<script src="scripts/directive/waiting-for-client-answer.js"></script>
+<script src="scripts/directive/own.js"></script>
+<script src="scripts/directive/open.js"></script>
 <!-- run -->
 <script src="scripts/run.js"></script>
 <!-- endbuild -->
 
 
 <script>
-    angular.module('unchatbar-stream').run(['Broker',
-        function ( Broker) {
-            Broker.connectServer();
+    angular.module('unchatbar-stream').run(function (Broker) {
+        Broker.connectServer();
+    });
+    angular.module('unchatbar-stream').controller('unDataChatDemo',
+            function ($scope, Broker) {
+                var ownPeerId = Broker.getPeerId();
+                $scope.user = {};
+                $scope.channelList = [{name: 'channelA'}, {name: 'channelB'}];
+                $scope.activeChannel = $scope.channelList[0];
+                $scope.userList = {
+                    channelA: {},
+                    channelB: {}
+                };
+                $scope.userList['channelA'][ownPeerId] = {
+                    id: ownPeerId,
+                    label: 'mySelf'
+                };
+                $scope.userList['channelB'][ownPeerId] = {
+                    id: ownPeerId,
+                    label: 'mySelf'
+                };
+                $scope.userListAll = {};
+                $scope.addUser = function () {
+                    var userId = $scope.user.id;
+                    $scope.userList[$scope.activeChannel.name][userId] = $scope.user;
+                    $scope.user = {};
+                    mergeUserList();
+                }
+                function mergeUserList() {
+                    $scope.userListAll = _.merge($scope.userList.channelA, $scope.userList.channelB);
+                }
 
-        }]);
+                mergeUserList();
+            });
 </script>
 </body>
 </html>

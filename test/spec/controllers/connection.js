@@ -25,7 +25,7 @@ describe('Controller: phoneBook', function () {
         describe('callUser', function () {
             it('should call `unStreamConnection.call` with peerId,type,metaData ', function () {
                 spyOn(unStreamConnectionService, 'call').and.returnValue(true);
-                scope.callUser('peerId', 'type', {metaData: 'meta'});
+                scope.callUser([{id:'peerId'}], 'type', {metaData: 'meta'});
                 expect(unStreamConnectionService.call).toHaveBeenCalledWith('peerId', 'type', {metaData: 'meta'});
             });
         });
@@ -38,30 +38,30 @@ describe('Controller: phoneBook', function () {
             });
         });
 
-        describe('closeStream', function () {
+        describe('close', function () {
             it('should call `unStreamConnection.call` with peerId,type,metaData ', function () {
                 spyOn(unStreamConnectionService, 'close').and.returnValue(true);
-                scope.closeStream('peerId');
+                scope.close('peerId');
                 expect(unStreamConnectionService.close).toHaveBeenCalledWith('peerId');
             });
         });
 
-        describe('getStreamsWaitingForAnswer' , function(){
+        describe('getStreamsWaitingForYourAnswer' , function(){
             beforeEach(function(){
                 spyOn(unStreamConnectionService, 'getList').and.returnValue(['returnList']);
             });
 
             it('should set return value from `unStreamConnection.getList` to `scope.streamsWaitingForYourAnswer`' , function(){
-                scope.getStreamsWaitingForAnswer();
+                scope.getStreamsWaitingForYourAnswer();
                 expect(scope.streamsWaitingForYourAnswer).toEqual(['returnList']);
             });
 
             it('should call `unStreamConnection.getList` with filter status `waitingForYourAnswer`' , function(){
-                scope.getStreamsWaitingForAnswer();
+                scope.getStreamsWaitingForYourAnswer();
                 expect(unStreamConnectionService.getList).toHaveBeenCalledWith({status : 'waitingForYourAnswer'});
             });
             it('should call `unStreamConnection.getList` with filter status `waitingForYourAnswer` and channel' , function(){
-                scope.getStreamsWaitingForAnswer('testChannel');
+                scope.getStreamsWaitingForYourAnswer('testChannel');
                 expect(unStreamConnectionService.getList).toHaveBeenCalledWith({status : 'waitingForYourAnswer',channel : 'testChannel'});
             });
         });

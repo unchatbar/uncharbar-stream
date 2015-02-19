@@ -42,13 +42,13 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * @methodOf unchatbar-stream.controller:unStreamConnection
          * @return {Object} own stream object
          */
-        $scope.ownStream = null;
+        $scope.ownStream = $scope.ownStream || null;
 
         /**
          * @ngdoc methode
          * @name getOpenStreams
          * @methodOf unchatbar-stream.controller:unStreamConnection
-         * @params {String} peerId client peer id
+         * @params {Array} users list of client peer id
          * @params {String} stream type [video/audio]
          * @params {Object} metadata for stream (e.g channel)
          * @description
@@ -56,8 +56,10 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * call to user
          *
          */
-        $scope.callUser = function (peerId, type,metaData) {
-            unStreamConnection.call(peerId, type,metaData);
+        $scope.callUser = function (users, type,metaData) {
+            _.forEach(users,function(user){
+                unStreamConnection.call(user.id, type,metaData);
+            });
         };
 
         /**
@@ -86,27 +88,8 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * close stream connection
          *
          */
-        $scope.closeStream = function (peerId) {
+        $scope.close = function (peerId) {
             unStreamConnection.close(peerId);
-        };
-
-
-        /**
-         * @ngdoc methode
-         * @name getStreamsWaitingForAnswer
-         * @methodOf unchatbar-stream.controller:unStreamConnection
-         * @params {String} channel id of channel
-         * @description
-         *
-         * get list of streams, waiting for your answer
-         *
-         */
-        $scope.getStreamsWaitingForAnswer = function (channel) {
-            var filter = {status : 'waitingForYourAnswer'};
-            if (channel) {
-                filter.channel = channel;
-            }
-            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList(filter);
         };
 
         /**
@@ -126,6 +109,24 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
                 filter.channel = channel;
             }
             $scope.openStream = unStreamConnection.getList(filter);
+        };
+
+        /**
+         * @ngdoc methode
+         * @name getStreamsWaitingForYourAnswer
+         * @methodOf unchatbar-stream.controller:unStreamConnection
+         * @params {String} channel id of channel
+         * @description
+         *
+         * get list of streams, waiting for your answer
+         *
+         */
+        $scope.getStreamsWaitingForYourAnswer = function (channel) {
+            var filter = {status : 'waitingForYourAnswer'};
+            if (channel) {
+                filter.channel = channel;
+            }
+            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList(filter);
         };
 
         /**

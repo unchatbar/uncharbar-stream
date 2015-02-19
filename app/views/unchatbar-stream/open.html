@@ -1,0 +1,9 @@
+<div>
+    open:
+    <div data-ng-repeat="connection in openStream">
+        {{userMap[connection.peerId].label}}
+
+        <video autoplay="autoplay" src="{{URL.createObjectURL(connection)}}" width="200"></video>
+
+    </div>
+</div>
