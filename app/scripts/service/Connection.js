@@ -10,7 +10,7 @@
  */
 angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q',
     function ($rootScope, $q) {
-        var possibleStatus = ['waitingForYourAnswer','waitingForClientAnswer','open'];
+        var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
             /**
              * @ngdoc methode
@@ -30,21 +30,25 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * @returns {Object} own stream Object
              *
              */
-            ownStream: null,
+            ownStream: {},
 
             /**
              * @ngdoc methode
              * @name call
              * @methodOf unchatbar-stream.unStreamConnection
-             * @params {Array} users list of users
-             * @params {type} stream type [video/audio]
+             * @params {String} peerId client peer id
+             * @params {String} stream type [video/audio]
+             * @params {Object} meta data for stream
              * @description
              *
              * call to client
              *
              */
-            call : function(user,type) {
-
+            call: function (peerId, type, metaData) {
+                this._createOwnStream(type).then(function (stream) {
+                    var connection = Broker.connectStream(peerId, stream, metaData);
+                    api.add(connection,'waitingForClientAnswer');
+                });
             },
 
             /**
@@ -57,8 +61,11 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * answer to client stream
              *
              */
-            answer : function(peerId){
-
+            answer: function (peerId,type) {
+                this._createOwnStream(type).then(function (stream) {
+                    var index = _.findIndex(api.streams, { 'peerId': peerId});
+                    api.streams[index].connection.answer(stream);
+                });
             },
 
             /**
@@ -71,8 +78,9 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * close stream
              *
              */
-            close : function(peerId) {
-
+            close: function (peerId) {
+                var index = _.findIndex(api.streams, { 'peerId': this.peer});
+                api.streams[this.peer].connection.close();
             },
 
             /**
@@ -86,23 +94,16 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * add a new stream
              *
              */
-            add : function(connection,status) {
-
-            },
-
-            /**
-             * @ngdoc methode
-             * @name close
-             * @methodOf unchatbar-stream.unStreamConnection
-             * @params {String} peerId client peerId
-             * @params {status} status status of stream
-             * @description
-             *
-             * update a stream
-             *
-             */
-            update : function(peerId,status) {
-
+            add: function (connection, status) {
+                api.streams.push({peerId: connection.peer, connection: connection, status: status});
+                connection.on('stream', function (stream) {
+                    var index = _.findIndex(api.streams, { 'peerId': this.peer});
+                    api.streams[this.peer].status = 'open';
+                });
+                call.on('close', function () {
+                    var index = _.findIndex(api.streams, { 'peerId': this.peer});
+                    api.streams.splice(this.peer,1);
+                });
             },
 
             /**
@@ -110,15 +111,14 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * @name close
              * @methodOf unchatbar-stream.unStreamConnection
              * @params {status} status status of stream
-             * @params {String} peerId client peerId
              * @return {Array} list of streams
              * @description
              *
              * get a list of stream filter by user and status
              *
              */
-            getList : function(status,users){
-
+            getList: function (status) {
+                return _.filter(api.streams,  { status: status});
             },
 
             /**
@@ -132,9 +132,49 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * create own stream
              *
              */
-            _createOwnStream : function(type){
-
+            _createOwnStream: function (type) {
+                var defer = $q.defer();
+                navigator.getUserMedia = this._getUserMediaApi();
+                if (navigator.getUserMedia === 0) {
+                    defer.reject('no media api');
+                } else if (this.getOwnStream(type)) {
+                    defer.resolve(this.getOwnStream(type));
+                } else {
+                    navigator.getUserMedia(
+                        {
+                            video: type === 'video' ? true : false,
+                            audio: true
+                        },
+                        function (stream) {
+                            api.ownStream[type] = stream;
+                            defer.resolve(stream);
+                        }.bind(this),
+                        function (error) {
+                            return defer.reject(error);
+                        }
+                    );
+                }
+                return defer.promise;
             },
+
+            /**
+             * @ngdoc methode
+             * @name _getUserMediaApi
+             * @methodOf unchatbar-stream.unStreamConnection
+             * @returns {Object} usermedia Api
+             * @private
+             * @description
+             *
+             * get usermedia api for browser
+             *
+             */
+            _getUserMediaApi: function () {
+                return ( navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia);
+            },
+
 
             /**
              * @ngdoc methode
@@ -146,8 +186,8 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * get own stream
              *
              */
-            getOwnStream : function(){
-                return api.ownStream;
+            getOwnStream: function (type) {
+                return api.ownStream[type] || null;
             }
         };
 

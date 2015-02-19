@@ -96,7 +96,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          *
          */
         $scope.getOpenStreams = function (users) {
-            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList('open', users);
+            $scope.streamsWaitingForYourAnswer = unStreamConnection.getList('open');
         };
 
         /**
@@ -122,7 +122,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          *
          */
         $scope.getOwnStream = function (users) {
-            $scope.ownStream = unStreamConnection.getOwnStream();
+            $scope.ownStream = unStreamConnection.getOwnStream('video');
         };
     }
 ]);
