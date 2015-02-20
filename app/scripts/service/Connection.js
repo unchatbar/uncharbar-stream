@@ -8,8 +8,8 @@
  * # peer
  * stream connection
  */
-angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q', 'Broker',
-    function ($rootScope, $q, Broker) {
+angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q', '$window', '$sce', 'Broker',
+    function ($rootScope, $q, $window, $sce, Broker) {
         var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
             /**
@@ -56,7 +56,7 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
             call: function (peerId, type, metaData) {
                 if (Broker.getPeerId() !== peerId) {
                     this._createOwnStream(type).then(function (stream) {
-                        if(-1 === _.findIndex(api.streams, {'peerId': peerId})) {
+                        if (-1 === _.findIndex(api.streams, {'peerId': peerId})) {
                             var connection = Broker.connectStream(peerId, stream, metaData);
                             api.add(connection, 'waitingForClientAnswer');
                         }
@@ -124,14 +124,20 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
                 api.streams.push(stream);
                 api._broadcastStreamUpdate();
                 connection.on('stream', function (stream) {
+                    var streamType = '';
                     var index = _.findIndex(api.streams, {'peerId': this.peer});
+                    if (stream.getVideoTracks()[0]) {
+                        streamType = 'video';
+                    }else if (stream.getAudioTracks()[0]) {
+                        streamType = 'audio';
+                    }
                     api.streams[index].status = 'open';
-                    console.log(api.streams);
+                    api.streams[index].type = streamType;
+                    api.streams[index].stream = $sce.trustAsResourceUrl($window.URL.createObjectURL(stream));
                     api._broadcastStreamUpdate();
                     $rootScope.$apply();
                 });
             },
-
 
 
             /**
@@ -242,9 +248,9 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             _broadcastStreamUpdate: function () {
-                if(api.streams.length === 0) {
+                if (api.streams.length === 0) {
                     api.ownStream = {};
-                    $rootScope.$broadcast('StreamRemoveOwn',{});
+                    $rootScope.$broadcast('StreamRemoveOwn', {});
                 }
                 $rootScope.$broadcast('StreamUpdate',
                     {

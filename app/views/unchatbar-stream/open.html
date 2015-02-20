@@ -1,9 +1,12 @@
 <div>
-    open:
     <div data-ng-repeat="connection in openStream">
         {{userMap[connection.peerId].label}}
-
-        <video autoplay="autoplay" src="{{URL.createObjectURL(connection)}}" width="200"></video>
-
+        <div data-ng-if="connection.type === 'video'">
+            <video autoplay="autoplay" data-ng-src="{{connection.stream}}" width="200"></video>
+        </div>
+        <div data-ng-if="connection.type === 'audio'">
+            <audio autoplay="autoplay" autoplay data-ng-src="{{connection.stream}}" width="200"></audio>
+        </div>
+        <button type="button" class="btn btn-default" data-ng-click="close(connection.peerId)">cancel</button>
     </div>
 </div>

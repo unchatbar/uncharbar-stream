@@ -27,9 +27,10 @@ angular.module('unchatbar-stream').directive('unStreamOpen', [
 
                 scope.$on('StreamUpdate' , function(){
                     scope.getOpenStreams(scope.channel);
-                    console.log(scope.openStream);
                 });
+
             }
+
         };
     }
 ]);

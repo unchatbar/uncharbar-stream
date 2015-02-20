@@ -1,14 +1,16 @@
 'use strict';
 
 describe('Serivce: phoneBook', function () {
-    var rootScope, unStreamConnectionService, BrokerService;
+    var rootScope,windowService,sceService, unStreamConnectionService, BrokerService;
     beforeEach(module('unchatbar-stream'));
 
 
-    beforeEach(inject(function ($rootScope, unStreamConnection, Broker) {
+    beforeEach(inject(function ($rootScope,$window,$sce, unStreamConnection, Broker) {
         rootScope = $rootScope;
         unStreamConnectionService = unStreamConnection;
         BrokerService = Broker;
+        windowService = $window;
+        sceService = $sce;
     }));
 
     describe('check methode', function () {
@@ -124,7 +126,9 @@ describe('Serivce: phoneBook', function () {
             });
         });
         describe('add', function () {
-            var connectionMock, callBackMock = {};
+            var connectionMock,
+                callBackMock = {},
+                streamObject;
 
             beforeEach(function () {
                 connectionMock = {
@@ -138,6 +142,21 @@ describe('Serivce: phoneBook', function () {
 
                     }
                 };
+                streamObject = {
+                    video : [],
+                    audio : [],
+                    getVideoTracks : function(){
+                        return this.video;
+                    },
+                    getAudioTracks : function(){
+                        return this.audio;
+                    }
+                };
+                windowService.URL = {
+                    createObjectURL : function(){}
+                };
+                spyOn(windowService.URL,'createObjectURL').and.returnValue('streamObject');
+                spyOn(sceService,'trustAsResourceUrl').and.returnValue('trustStream');
                 spyOn(connectionMock, 'on').and.callFake(function (eventName, callback) {
                     connectionMock[eventName] = callback;
                 });
@@ -155,10 +174,47 @@ describe('Serivce: phoneBook', function () {
                     }
                 ]);
             });
+            it('should call `$window.URL.createObjectURL` with stream' , function(){
+                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
 
+                connectionMock.stream(streamObject);
+
+                expect(windowService.URL.createObjectURL).toHaveBeenCalledWith(streamObject);
+            });
+            it('should set stream.type to `video`, when video track is diefined' , function(){
+                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+                streamObject.video.push('video');
+
+                connectionMock.stream(streamObject);
+
+                expect(unStreamConnectionService.streams[0].type).toBe('video');
+            });
+
+            it('should set stream.type to `audio`, when audio track is diefined' , function(){
+                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+                streamObject.audio.push('audio');
+
+                connectionMock.stream(streamObject);
+
+                expect(unStreamConnectionService.streams[0].type).toBe('audio');
+            });
+            it('should call `$sce.trustAsResourceUrl` with returnValue from `$window.URL.createObjectURL`' , function(){
+                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+
+                connectionMock.stream(streamObject);
+
+                expect(sceService.trustAsResourceUrl).toHaveBeenCalledWith('streamObject');
+            });
+            it('should set stream to stream object' , function(){
+                unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+
+                connectionMock.stream(streamObject);
+
+                expect(unStreamConnectionService.streams[0].stream).toBe('trustStream');
+            });
             it('should change status to `open` after event `stream` triggerd ', function () {
                 unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
-                connectionMock.stream();
+                connectionMock.stream(streamObject);
 
                 expect(unStreamConnectionService.streams[0].status).toBe('open');
 
