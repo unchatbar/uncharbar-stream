@@ -10,7 +10,6 @@
  */
 angular.module('unchatbar-stream', [
     'constants',
-    'ngStorage',
     'unchatbar-connection'
 
 ]);
