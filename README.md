@@ -20,7 +20,6 @@ Peer to peer chat application using WebRTC technologies
 * json3
 * es5-shim
 * bootstrap-css-only
-* ngstorage
 * lodash
 * unchatbar-connection
 
