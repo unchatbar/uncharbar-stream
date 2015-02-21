@@ -10,7 +10,7 @@ Peer to peer chat application using WebRTC technologies
 ## Installation
 * Install Bower: `npm install -g bower`
 * Install Gunt CLI: `npm install -g grunt-cli`
-* Clone repository `git clone git://github.com/unchatbar/unchatbar.git`
+* Clone repository `git clone git://github.com/unchatbar/unchatbar-stream.git`
 * Run `npm install` to install required Node.js modules
 * Run `bower install` to install required Bower components
 
@@ -29,16 +29,104 @@ Peer to peer chat application using WebRTC technologies
 angular.module('app', ['unchatbar-stream'])
 ```
 
-configure route see below
-
-
-
-
-## Configure
 
 
 ## API
 
+* call a stream to client (unStreamConnection.createOwnStream have to call and resolve before)
+
+>
+```javascript
+unStreamConnection.call([PEER-ID], [VIDEO/AUDIO], [METADATA]);
+```
+
+
+* close a stream from client
+
+>
+```javascript
+unStreamConnection.close([PEER-ID]);
+```
+
+* add a new stream to storage
+
+>
+```javascript
+unStreamConnection.add([PEER-ID],[open/waitingForClientAnswer/waitingForYourAnswer]);
+```
+
+* get a stream from storage
+
+>
+```javascript
+unStreamConnection.get([PEER-ID]);
+```
+
+* get a list of stream
+
+>
+```javascript
+unStreamConnection.getList([FILTER]);
+```
+
+* create a own stream object
+
+>
+```javascript
+unStreamConnection.createOwnStream([VIDEO/AUDIO]);
+```
+
+* create a own stream object from storage
+
+>
+```javascript
+unStreamConnection.getOwnStream([VIDEO/AUDIO]);
+```
+
+
 ## Directive
 
+
+* own video stream
+
+>
+```html
+<un-stream-own></un-stream-own>
+```
+
+* stream call button for channel
+
+>
+```html
+<un-stream-call data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call>
+```
+
+
+* client stream waiting for your answer/permission
+
+>
+```html
+<un-stream-waiting-for-your-answer data-user-map="[USERLIST]"></un-stream-waiting-for-your-answer>
+```
+
+
+* your stream calls, waiting for client answer/permission
+
+>
+```html
+<un-stream-waiting-for-client-answer data-user-map="[USERLIST]"></un-stream-waiting-for-client-answer>
+```
+
+
+* list of open stream
+
+>
+```html
+<un-stream-open data-channel="{{activeChannel.name}}"
+data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-open>
+```
+
 ## Events
+
+* **StreamUpdate**: add/Update/remove a stream
+* **StreamRemoveOwn**: remove own stream
