@@ -1,0 +1,6 @@
+<div >
+    {{userMap}}
+    <div data-ng-repeat="connection in streamsWaitingForYourAnswer">
+        {{userMap[connection.peerId].label}} ({{connection.peerId}})
+    </div>
+</div>

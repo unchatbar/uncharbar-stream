@@ -19,7 +19,7 @@ angular.module('unchatbar-stream').directive('unStreamCall', [
             controller: 'unStreamConnection',
             scope: {
                 channel: '@',
-                userList: '='
+                userMap: '='
 
             },
             link: function (scope) {

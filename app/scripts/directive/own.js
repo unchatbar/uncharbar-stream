@@ -10,8 +10,8 @@
  * message box
  *
  */
-angular.module('unchatbar-stream').directive('unStreamOwn', [
-    function () {
+angular.module('unchatbar-stream').directive('unStreamOwn', ['$window',
+    function ($window) {
         return {
             restrict: 'E',
             replace: false,
@@ -34,7 +34,7 @@ angular.module('unchatbar-stream').directive('unStreamOwn', [
                 function createStreamSource () {
                     scope.getOwnStream('video');
                     if (scope.ownStream){
-                        element.find('video').prop('src', URL.createObjectURL(scope.ownStream));
+                        element.find('video').prop('src', $window.URL.createObjectURL(scope.ownStream));
                         scope.isVsisible = true;
                     } else {
                         scope.isVsisible = false;
