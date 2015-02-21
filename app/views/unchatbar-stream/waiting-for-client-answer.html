@@ -1,6 +1,6 @@
 <div >
     <div data-ng-repeat="connection in streamsWaitingForClientAnswer">
-        {{userMap[connection.peerId].label}}
+        {{userMap[connection.peerId].label}} ({{connection.peerId}})
         <button type="button" class="btn btn-default" data-ng-click="close(connection.peerId)">cancel</button>
         <hr>
     </div>

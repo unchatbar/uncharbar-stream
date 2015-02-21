@@ -11,12 +11,16 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
 
   $templateCache.put('views/unchatbar-stream/open.html',
     "<div>\n" +
-    "    open:\n" +
     "    <div data-ng-repeat=\"connection in openStream\">\n" +
+    "        type : {{connection.type}}<br>\n" +
     "        {{userMap[connection.peerId].label}}\n" +
-    "\n" +
-    "        <video autoplay=\"autoplay\" data-ng-src=\"{{URL.createObjectURL(connection)}}\" width=\"200\"></video>\n" +
-    "\n" +
+    "        <div data-ng-if=\"connection.type === 'video'\">\n" +
+    "            <video autoplay=\"autoplay\" data-ng-src=\"{{connection.stream}}\" width=\"200\"></video>\n" +
+    "        </div>\n" +
+    "        <div data-ng-if=\"connection.type === 'audio'\">\n" +
+    "            <audio autoplay=\"autoplay\" autoplay data-ng-src=\"{{connection.stream}}\" width=\"200\"></audio>\n" +
+    "        </div>\n" +
+    "        <button type=\"button\" class=\"btn btn-default\" data-ng-click=\"close(connection.peerId)\">cancel</button>\n" +
     "    </div>\n" +
     "</div>"
   );

@@ -54,13 +54,11 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             call: function (peerId, type, metaData) {
-                if (Broker.getPeerId() !== peerId) {
-                    this._createOwnStream(type).then(function (stream) {
-                        if (-1 === _.findIndex(api.streams, {'peerId': peerId})) {
-                            var connection = Broker.connectStream(peerId, stream, metaData);
-                            api.add(connection, 'waitingForClientAnswer');
-                        }
-                    });
+                if (peerId && Broker.getPeerId() !== peerId) {
+                    if (-1 === _.findIndex(api.streams, {'peerId': peerId})) {
+                        var connection = Broker.connectStream(peerId, api.getOwnStream(type), metaData);
+                        api.add(connection, 'waitingForClientAnswer');
+                    }
                 }
             },
 
@@ -76,10 +74,9 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             answer: function (peerId, type) {
-                this._createOwnStream(type).then(function (stream) {
-                    var index = _.findIndex(api.streams, {'peerId': peerId});
-                    api.streams[index].connection.answer(stream);
-                });
+                var index = _.findIndex(api.streams, {'peerId': peerId});
+                api.streams[index].connection.answer(api.getOwnStream(type));
+
             },
 
             /**
@@ -111,32 +108,51 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              *
              */
             add: function (connection, status) {
-                var stream = {
-                    peerId: connection.peer,
-                    status: status,
-                    connection: connection
-                };
-                var options = connection.options || {};
-                _.forEach(api.metaIndexFields, function (field) {
-                    stream[field] = options.metadata[field] || '';
-                });
+                if (!api.get(connection.peer)) {
+                    var stream = {
+                        peerId: connection.peer,
+                        status: status,
+                        meta: connection.options.metadata || {},
+                        connection: connection
+                    };
 
-                api.streams.push(stream);
-                api._broadcastStreamUpdate();
-                connection.on('stream', function (stream) {
-                    var streamType = '';
-                    var index = _.findIndex(api.streams, {'peerId': this.peer});
-                    if (stream.getVideoTracks()[0]) {
-                        streamType = 'video';
-                    }else if (stream.getAudioTracks()[0]) {
-                        streamType = 'audio';
-                    }
-                    api.streams[index].status = 'open';
-                    api.streams[index].type = streamType;
-                    api.streams[index].stream = $sce.trustAsResourceUrl($window.URL.createObjectURL(stream));
+                    _.forEach(api.metaIndexFields, function (field) {
+                        stream[field] = stream.meta[field] || '';
+                    });
+
+                    api.streams.push(stream);
                     api._broadcastStreamUpdate();
-                    $rootScope.$apply();
-                });
+                    connection.on('stream', function (stream) {
+                        var streamType = '';
+                        var index = _.findIndex(api.streams, {'peerId': this.peer});
+                        if (stream.getVideoTracks()[0]) {
+                            streamType = 'video';
+                        } else if (stream.getAudioTracks()[0]) {
+                            streamType = 'audio';
+                        }
+                        api.streams[index].status = 'open';
+                        api.streams[index].type = streamType;
+                        api.streams[index].stream = $sce.trustAsResourceUrl($window.URL.createObjectURL(stream));
+                        api._broadcastStreamUpdate();
+                        $rootScope.$apply();
+                    });
+                }
+            },
+
+            /**
+             * @ngdoc methode
+             * @name get
+             * @methodOf unchatbar-stream.unStreamConnection
+             * @params {String} peerId client peer id
+             * @return {Object} stream connection
+             * @description
+             *
+             * get a store connection by id
+             *
+             */
+            get: function (peerId) {
+                var index = _.findIndex(api.streams, {'peerId': peerId});
+                return _.cloneDeep(api.streams[index]) || null;
             },
 
 
@@ -167,7 +183,7 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              * create own stream
              *
              */
-            _createOwnStream: function (type) {
+            createOwnStream: function (type) {
                 var defer = $q.defer();
                 navigator.getUserMedia = this._getUserMediaApi();
                 if (navigator.getUserMedia === 0) {

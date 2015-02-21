@@ -10,8 +10,8 @@
  * client controller
  *
  */
-angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', 'unStreamConnection',
-    function ($scope, unStreamConnection) {
+angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '$q', 'unStreamConnection',
+    function ($scope, $q, unStreamConnection) {
         /**
          * @ngdoc methode
          * @name openStream
@@ -46,19 +46,25 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
 
         /**
          * @ngdoc methode
-         * @name getOpenStreams
+         * @name call
          * @methodOf unchatbar-stream.controller:unStreamConnection
          * @params {Array} users list of client peer id
          * @params {String} stream type [video/audio]
-         * @params {Object} metadata for stream (e.g channel)
+         * @params {String} channel for stream
          * @description
          *
          * call to user
          *
          */
-        $scope.callUser = function (users, type,metaData) {
-            _.forEach(users,function(user){
-                unStreamConnection.call(user.id, type,metaData);
+        $scope.call = function (users, type, channel) {
+            unStreamConnection.createOwnStream(type).then(function () {
+                _.forEach(users, function (user) {
+                    unStreamConnection.call(user.id, type,
+                        {
+                            channel: channel,
+                            users: users || []
+                        });
+                });
             });
         };
 
@@ -73,8 +79,12 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          * close stream connection
          *
          */
-        $scope.answer = function (peerId,type) {
-            unStreamConnection.answer(peerId,type);
+        $scope.answer = function (peerId, type) {
+            unStreamConnection.createOwnStream(type).then(function () {
+                unStreamConnection.answer(peerId, type);
+                var streamConnection = unStreamConnection.get(peerId);
+                $scope.call(streamConnection.meta.users || [],type,streamConnection.meta.channel);
+            });
         };
 
 
@@ -104,7 +114,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          *
          */
         $scope.getOpenStreams = function (channel) {
-            var filter = {status : 'open'};
+            var filter = {status: 'open'};
             if (channel) {
                 filter.channel = channel;
             }
@@ -122,7 +132,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          *
          */
         $scope.getStreamsWaitingForYourAnswer = function (channel) {
-            var filter = {status : 'waitingForYourAnswer'};
+            var filter = {status: 'waitingForYourAnswer'};
             if (channel) {
                 filter.channel = channel;
             }
@@ -140,7 +150,7 @@ angular.module('unchatbar-stream').controller('unStreamConnection', ['$scope', '
          *
          */
         $scope.getStreamsWaitingForClientAnswer = function (channel) {
-            var filter = {status : 'waitingForClientAnswer'};
+            var filter = {status: 'waitingForClientAnswer'};
             if (channel) {
                 filter.channel = channel;
             }
