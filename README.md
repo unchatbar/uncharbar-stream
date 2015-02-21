@@ -128,5 +128,5 @@ data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stre
 
 ## Events
 
-* **StreamUpdate**: add/Update/remove a stream
+* **StreamUpdate**: add/Update/remove a stream (contains `waitingClients` : list of clients waiting for your answer: )
 * **StreamRemoveOwn**: remove own stream
