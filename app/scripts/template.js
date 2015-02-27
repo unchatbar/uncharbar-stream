@@ -24,7 +24,7 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
     "                <img ng-src=\"{{userMap[connection.peerId].image}}\" width=\"80px\"\n" +
     "                     class=\"profile-image img-thumbnail img-circle img-responsive\">\n" +
     "                <audio class=\"client-audio\" autoplay=\"autoplay\" controls=\"true\" autoplay data-ng-src=\"{{connection.stream}}\"\n" +
-    "                       width=\"200\"></audio>\n" +
+    "                       width=\"100\"></audio>\n" +
     "            </div>\n" +
     "            <div class=\"stream-video-cancel\" data-ng-click=\"close(connection.peerId)\">\n" +
     "                <i class=\"fa fa-times fa-3x\"></i>\n" +
@@ -38,7 +38,7 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
 
   $templateCache.put('views/unchatbar-stream/own.html',
     "<div>\n" +
-    "    <video autoplay=\"autoplay\" controls=\"true\" data-ng-show=\"isVsisible\" ></video>\n" +
+    "    <video autoplay=\"autoplay\" controls=\"true\" width=\"100px\" data-ng-show=\"isVsisible\" ></video>\n" +
     "</div>\n" +
     "\n"
   );
