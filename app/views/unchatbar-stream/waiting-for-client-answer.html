@@ -1,7 +1,17 @@
-<div >
-    <div data-ng-repeat="connection in streamsWaitingForClientAnswer">
-        {{userMap[connection.peerId].label}} ({{connection.peerId}})
-        <button type="button" class="btn btn-default" data-ng-click="close(connection.peerId)">cancel</button>
-        <hr>
+<div class="row">
+    <div class="col-sx-12">
+        <div data-ng-repeat="connection in streamsWaitingForClientAnswer" class="pull-left waiting-client-container">
+            <div class="profile-img-container">
+                <img ng-src="{{userMap[connection.peerId].image}}" width="80px"
+                     class="profile-image img-thumbnail img-circle img-responsive">
+                <i class="fa fa-spinner fa-pulse fa-spin fa-5x"></i>
+            </div>
+            <p>waiting ...</p>
+            <div class="stream-video-cancel" data-ng-click="close(connection.peerId)">
+                <i class="fa fa-times fa-3x"></i>
+            </div>
+
+        </div>
+        <div class="clear-fix"></div>
     </div>
 </div>

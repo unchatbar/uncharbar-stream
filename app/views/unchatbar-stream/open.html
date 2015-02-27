@@ -1,13 +1,19 @@
-<div>
-    <div data-ng-repeat="connection in openStream">
-        type : {{connection.type}}<br>
-        {{userMap[connection.peerId].label}} ({{connection.peerId}})
-        <div data-ng-if="connection.type === 'video'">
-            <video autoplay="autoplay" controls="true" data-ng-src="{{connection.stream}}" width="200"></video>
+<div class="row">
+    <div class="col-sx-12">
+        <div data-ng-repeat="connection in openStream " class="pull-left open-client-container text-center">
+            <div data-ng-if="connection.type === 'video'">
+                <video autoplay="autoplay" controls="true" data-ng-src="{{connection.stream}}" width="200"></video>
+            </div>
+            <div data-ng-if="connection.type === 'audio'">
+                <img ng-src="{{userMap[connection.peerId].image}}" width="80px"
+                     class="profile-image img-thumbnail img-circle img-responsive">
+                <audio class="client-audio" autoplay="autoplay" controls="true" autoplay data-ng-src="{{connection.stream}}"
+                       width="200"></audio>
+            </div>
+            <div class="stream-video-cancel" data-ng-click="close(connection.peerId)">
+                <i class="fa fa-times fa-3x"></i>
+            </div>
         </div>
-        <div data-ng-if="connection.type === 'audio'">
-            <audio autoplay="autoplay" controls="true" autoplay data-ng-src="{{connection.stream}}" width="200"></audio>
-        </div>
-        <button type="button" class="btn btn-default" data-ng-click="close(connection.peerId)">cancel</button>
+        <div class="clear-fix"></div>
     </div>
 </div>

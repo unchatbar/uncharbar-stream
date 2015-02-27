@@ -3,14 +3,13 @@
 <head>
     <meta charset="utf-8">
     <base href="/">
-    <title>unchatbar connection</title>
+    <title>unchatbar stream</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="bower_components/unchatbar-user/app/styles/custom.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css"/>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -19,56 +18,76 @@
     <!-- endbuild -->
 </head>
 <body>
-<un-connection-peer-id></un-connection-peer-id>
-
-<div class="container">
-    <h1>DEMO (Demo Controller : unDataChatDemo)</h1>
-
-    <div ng-controller="unDataChatDemo">
-        <div class="row">
-            <div class="col-md-5">
-                <select ng-options="item.name for item in channelList" ng-model="activeChannel"></select>
-
-                <div ng-repeat="user in userList[activeChannel.name]">
-                    <b>{{user.id}}</b>/{{user.label}} <br/>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="#" class="navbar-brand">unchatbar stream</a>
+        </div>
+    </div>
+</nav>
+<div class="container" ng-controller="unDataChatDemo">
+    <div class="jumbotron">
+        <div ng-repeat="(channel,userMap) in channelList" class="container-fluid pull-left">
+            <div class="panel panel-primary ">
+                <div class="panel-heading">Channel:{{channel}}</div>
+                <div class="panel-body">
+                    <div ng-repeat="user in userMap" class="pull-left">
+                        <div style="height: 100px;">
+                            <img class="profile-image" ng-src="{{user.image}}" width="80">
+                        </div>
+                        {{user.label}}
+                        <br/>
+                        <button class="btn btn-default" data-ng-click="join(user.id)">select user</button>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-7">
-                Add user to Channel:
-                <form>
-                    <div class="form-group">
-                        <label for="clientPeer">Client Peer Id</label>
-                        <input type="input" data-ng-model="user.id" class="form-control" id="clientPeer"
-                               placeholder="Enter client peer id">
-                    </div>
-                    <div class="form-group">
-                        <label for="clientName">label</label>
-                        <input type="input" data-ng-model="user.label" class="form-control" id="clientName"
-                               placeholder="Enter client name">
-                    </div>
-                    <button type="submit" class="btn btn-default" ng-click="addUser()">add</button>
-                </form>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div>
+
+        <un-stream-waiting-for-your-answer data-user-map="userMap"></un-stream-waiting-for-your-answer>
+        <hr>
+        <un-stream-waiting-for-client-answer data-user-map="userMap"></un-stream-waiting-for-client-answer>
+        <hr>
+        <un-stream-own></un-stream-own>
+        <hr>
+        <un-stream-open data-channel="{{activeChannel}}"
+                        data-user-map="channelList[activeChannel]"></un-stream-open>
+
+
+    </div>
+    <div data-ng-show="ownPeerId" data-ng-init="activeChannel='GruppeA'">
+        <div class="row">
+            <div class="col-sx-12">
+                <div class="page-header">
+                    {{userMap[ownPeerId].label}}
+                </div>
+                <ul class="nav nav-tabs">
+                    <li role="presentation" data-ng-repeat="(channel,userMap) in channelList"
+                        data-ng-class="{'active' : channel === activeChannel}">
+                        <a href="javascript:void(0)" data-ng-click="setActiveChannel(channel)">{{channel}}</a>
+                    </li>
+                    <li>
+                        <un-data-chat-unread-message data-user-map="userMap"></un-data-chat-unread-message>
+                    </li>
+                </ul>
             </div>
         </div>
-        <h2>open Stream</h2>
-        <un-stream-open data-channel="{{activeChannel.name}}"
-                        data-user-map="userList[activeChannel.name]"></un-stream-open>
-        <hr>
-        <h2>call active channel</h2>
-        <un-stream-call data-channel="{{activeChannel.name}}"
-                        data-user-map="userList[activeChannel.name]"></un-stream-call>
-        <hr>
-        <h2>incomming calls (waiting for your answer)</h2>
+        <br/>
 
-        <un-stream-waiting-for-your-answer data-user-map="userListAll"></un-stream-waiting-for-your-answer>
-        <hr>
-        <h2>waiting for client answer</h2>
-        <un-stream-waiting-for-client-answer data-user-map="userListAll"></un-stream-waiting-for-client-answer>
-        <hr>
-        <h2>own Stream</h2>
-        <un-stream-own></un-stream-own>
+        <div class="row">
+            <div class="col-sx-12">
+                <div ng-show="channelList[activeChannel][ownPeerId]">
+                    <un-stream-call data-channel="{{activeChannel}}"
+                                    data-user-map="channelList[activeChannel]"></un-stream-call>
 
-
+                </div>
+                <div ng-show="!channelList[activeChannel][ownPeerId]">
+                    you are no member of group {{activeChannel}}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!--[if lt IE 7]>
@@ -91,13 +110,6 @@
 <script src="bower_components/lodash/dist/lodash.compat.js"></script>
 <script src="bower_components/peerjs/peer.js"></script>
 <script src="bower_components/ngstorage/ngStorage.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/app.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/run.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/template.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/provider/profile.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/controller/profile.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/directive/profile-admin.js"></script>
-<script src="bower_components/unchatbar-user/app/scripts/directive/profile.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/app.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/run.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/template.js"></script>
@@ -105,6 +117,7 @@
 <script src="bower_components/unchatbar-connection/app/scripts/provider/data-connection.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/service/peer.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/directive/dialer.js"></script>
+<script src="bower_components/unchatbar-connection/app/scripts/directive/login.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/directive/peerId.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/controller/dialer.js"></script>
 <!-- endbower -->
@@ -131,40 +144,57 @@
 
 
 <script>
-    angular.module('unchatbar-stream').run(function (Broker) {
-        Broker.connectServer();
-    });
     angular.module('unchatbar-stream').controller('unDataChatDemo',
             function ($scope, Broker) {
-                var ownPeerId = Broker.getPeerId();
-                $scope.user = {};
-                $scope.channelList = [{name: 'channelA'}, {name: 'channelB'}];
-                $scope.activeChannel = $scope.channelList[0];
-                $scope.userList = {
-                    channelA: {},
-                    channelB: {}
+                $scope.userMap = {
+                    'admin': {
+                        id: 'admin',
+                        label: 'Der Admin',
+                        image: '/images/admin.jpg'
+                    },
+                    'mia': {
+                        id: 'mia',
+                        label: 'Mia',
+                        image: '/images/support.jpg'
+                    },
+                    'meier': {
+                        id: 'meier',
+                        label: 'Herr Meier',
+                        image: '/images/sales.jpg'
+                    },
+                    'girlNextDoor': {
+                        id: 'girlNextDoor',
+                        label: 'girl next door',
+                        image: '/images/girl-next-door.jpg'
+                    }
                 };
-                $scope.userList['channelA'][ownPeerId] = {
-                    id: ownPeerId,
-                    label: 'mySelf'
+                $scope.channelList = {
+                    GruppeA: {
+                        admin: $scope.userMap.admin,
+                        mia: $scope.userMap.mia,
+                        meier: $scope.userMap.meier
+                    },
+                    privateChat: {
+                        meier: $scope.userMap.meier,
+                        girlNextDoor: $scope.userMap.girlNextDoor
+                    }
                 };
-                $scope.userList['channelB'][ownPeerId] = {
-                    id: ownPeerId,
-                    label: 'mySelf'
+                $scope.join = function (id) {
+                    Broker.setPeerId(id);
+                    Broker.connectServer();
                 };
-                $scope.userListAll = {};
-                $scope.addUser = function () {
-                    var userId = $scope.user.id;
-                    $scope.userList[$scope.activeChannel.name][userId] = $scope.user;
-                    $scope.user = {};
-                    mergeUserList();
+                $scope.$on('BrokerPeerOpen', function (event, data) {
+                    $scope.ownPeerId = Broker.getPeerIdFromStorage();
+                });
+                $scope.setActiveChannel = function (channel) {
+                    $scope.activeChannel = channel;
                 }
-                function mergeUserList() {
-                    $scope.userListAll = _.merge($scope.userList.channelA, $scope.userList.channelB);
+                $scope.ownPeerId = Broker.getPeerIdFromStorage();
+                if ($scope.ownPeerId) {
+                    $scope.join($scope.ownPeerId);
                 }
-
-                mergeUserList();
             });
+
 </script>
 </body>
 </html>
