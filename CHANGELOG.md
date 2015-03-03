@@ -1,4 +1,8 @@
 ## 0.0.2
+Feature:
+* close stream after 9 sec, when stream is not open
+
+## 0.0.2
 Bugfix:
 * change video size to 100px
 

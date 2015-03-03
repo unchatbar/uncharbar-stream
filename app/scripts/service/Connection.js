@@ -8,8 +8,8 @@
  * # peer
  * stream connection
  */
-angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$q', '$window', '$sce', 'Broker',
-    function ($rootScope, $q, $window, $sce, Broker) {
+angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope','$timeout', '$q', '$window', '$sce', 'Broker',
+    function ($rootScope,$timeout, $q, $window, $sce, Broker) {
         var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
             /**
@@ -91,9 +91,11 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
              */
             close: function (peerId) {
                 var index = _.findIndex(api.streams, {'peerId': peerId});
-                api.streams[index].connection.close();
-                api.streams.splice(index, 1);
-                api._broadcastStreamUpdate();
+                if (index !== -1) {
+                    api.streams[index].connection.close();
+                    api.streams.splice(index, 1);
+                    api._broadcastStreamUpdate();
+                }
             },
 
             /**
@@ -120,8 +122,16 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', 
                         stream[field] = stream.meta[field] || '';
                     });
 
+                        $timeout(function(){
+                            if(connection.open === false) {
+                                api.close(connection.peer);
+                            }
+                        },9000);
+
                     api.streams.push(stream);
                     api._broadcastStreamUpdate();
+
+
                     connection.on('stream', function (stream) {
                         var streamType = '';
                         var index = _.findIndex(api.streams, {'peerId': this.peer});
