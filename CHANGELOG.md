@@ -1,4 +1,4 @@
-## 0.0.2
+## 0.0.3
 Feature:
 * close stream after 9 sec, when stream is not open
 
