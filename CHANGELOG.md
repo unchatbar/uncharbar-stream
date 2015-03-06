@@ -1,3 +1,7 @@
+## 0.0.4
+Feature:
+* add local server for development
+
 ## 0.0.3
 Feature:
 * close stream after 9 sec, when stream is not open
