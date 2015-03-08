@@ -1,4 +1,9 @@
 ## 0.0.4
+Bugifx:
+* mute own stream video
+
+
+## 0.0.4
 Feature:
 * add local server for development
 

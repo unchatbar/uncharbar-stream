@@ -38,7 +38,7 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
 
   $templateCache.put('views/unchatbar-stream/own.html',
     "<div>\n" +
-    "    <video autoplay=\"autoplay\" controls=\"true\" width=\"100px\" data-ng-show=\"isVsisible\" ></video>\n" +
+    "    <video autoplay=\"autoplay\" controls=\"true\" muted width=\"100px\" data-ng-show=\"isVsisible\" ></video>\n" +
     "</div>\n" +
     "\n"
   );
