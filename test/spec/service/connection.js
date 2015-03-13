@@ -90,24 +90,45 @@ describe('Serivce: phoneBook', function () {
                 expect(unStreamConnectionService.streams[1].connection.answer).toHaveBeenCalledWith('ownStream');
             });
         });
+
         describe('close', function () {
+            var stream = {};
             beforeEach(inject(function ($q) {
-                unStreamConnectionService.streams = [
-                    {peerId: 'otherClient'},
-                    {
-                        peerId: 'peerId',
-                        connection: {
-                            close: function () {
-                            }
+                stream = {
+                    peerId: 'peerId',
+                    connection: {
+                        open: true,
+                        close: function () {
                         }
                     }
-                ];
-                spyOn(unStreamConnectionService.streams[1].connection, 'close').and.returnValue(true);
+                };
+
+
+                spyOn(stream.connection, 'close').and.returnValue(true);
             }));
             it('should remove peer from unStreamConnection.streams', function () {
+                unStreamConnectionService.streams = [{peerId: 'otherClient'}, stream];
+
                 unStreamConnectionService.close('peerId');
 
                 expect(unStreamConnectionService.streams).toEqual([{peerId: 'otherClient'}]);
+            });
+
+            it('should call close, when stream is open', function () {
+                unStreamConnectionService.streams = [{peerId: 'otherClient'}, stream];
+
+                unStreamConnectionService.close('peerId');
+
+                expect(stream.connection.close).toHaveBeenCalled();
+            });
+
+            it('should not call close, when stream is not open', function () {
+                stream.connection.open = false;
+                unStreamConnectionService.streams = [{peerId: 'otherClient'}, stream];
+
+                unStreamConnectionService.close('peerId');
+
+                expect(stream.connection.close).not.toHaveBeenCalled();
             });
         });
         describe('add', function () {
@@ -163,6 +184,26 @@ describe('Serivce: phoneBook', function () {
                     unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
 
                     expect(unStreamConnectionService.streams).toEqual([{peerId: 'clientPeerId'}]);
+                });
+            });
+            describe('stream close event', function () {
+                it('should call unStreamConnection.close with peerId when stream exists', function () {
+                    unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+                    spyOn(unStreamConnectionService, 'close').and.returnValue(true);
+
+                    connectionMock.close();
+
+                    expect(unStreamConnectionService.close).toHaveBeenCalledWith('clientPeerId');
+                });
+
+                it('should not call unStreamConnection.close when not stream exists', function () {
+                    unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
+
+                    spyOn(unStreamConnectionService, 'close').and.returnValue(true);
+                    unStreamConnectionService.streams = [];
+                    connectionMock.close();
+
+                    expect(unStreamConnectionService.close).not.toHaveBeenCalled();
                 });
             });
             describe('stream not exists', function () {
@@ -226,7 +267,7 @@ describe('Serivce: phoneBook', function () {
 
                     expect(unStreamConnectionService.streams[0].stream).toBe('trustStream');
                 });
-                
+
                 it('should change status to `open` after event `stream` triggerd ', function () {
                     unStreamConnectionService.add(connectionMock, 'waitingForClientAnswer');
                     connectionMock.stream(streamObject);

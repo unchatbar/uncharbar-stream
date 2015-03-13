@@ -1,3 +1,7 @@
+## 0.0.5
+Bugifx:
+* close stream for both client's
+
 ## 0.0.4
 Bugifx:
 * mute own stream video

@@ -8,8 +8,8 @@
  * # peer
  * stream connection
  */
-angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope','$timeout', '$q', '$window', '$sce', 'Broker',
-    function ($rootScope,$timeout, $q, $window, $sce, Broker) {
+angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope', '$timeout', '$q', '$window', '$sce', 'Broker',
+    function ($rootScope, $timeout, $q, $window, $sce, Broker) {
         var possibleStatus = ['waitingForYourAnswer', 'waitingForClientAnswer', 'open'];
         var api = {
             /**
@@ -92,8 +92,11 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope','
             close: function (peerId) {
                 var index = _.findIndex(api.streams, {'peerId': peerId});
                 if (index !== -1) {
-                    api.streams[index].connection.close();
+                    var connection = api.streams[index].connection;
                     api.streams.splice(index, 1);
+                    if (connection.open === true) {
+                        connection.close();
+                    }
                     api._broadcastStreamUpdate();
                 }
             },
@@ -122,16 +125,24 @@ angular.module('unchatbar-stream').service('unStreamConnection', ['$rootScope','
                         stream[field] = stream.meta[field] || '';
                     });
 
-                        $timeout(function(){
-                            if(connection.open === false) {
-                                api.close(connection.peer);
-                            }
-                        },9000);
+                    $timeout(function () {
+                        if (connection.open === false) {
+                            api.close(connection.peer);
+                        }
+                    }, 9000);
 
                     api.streams.push(stream);
                     api._broadcastStreamUpdate();
 
-
+                    connection.on('close', function () {
+                        var index = _.findIndex(api.streams, {'peerId': this.peer}),
+                            peer = this.peer;
+                        if (index !== -1) {
+                            $rootScope.$apply(function () {
+                                api.close(peer);
+                            });
+                        }
+                    });
                     connection.on('stream', function (stream) {
                         var streamType = '';
                         var index = _.findIndex(api.streams, {'peerId': this.peer});
