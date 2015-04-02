@@ -10,12 +10,12 @@
  * message box
  *
  */
-angular.module('unchatbar-stream').directive('unStreamCall', [
+angular.module('unchatbar-stream').directive('unStreamCallAudio', [
     function () {
         return {
             restrict: 'E',
             replace: false,
-            templateUrl: 'views/unchatbar-stream/call.html',
+            templateUrl: 'views/unchatbar-stream/call-audio.html',
             controller: 'unStreamConnection',
             scope: {
                 channel: '@',

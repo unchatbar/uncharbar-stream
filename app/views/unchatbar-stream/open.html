@@ -1,19 +1,18 @@
-<div class="row">
-    <div class="col-sx-12">
-        <div data-ng-repeat="connection in openStream " class="pull-left open-client-container text-center">
+<div class="un-stream-call-open">
+    <div>
+        <div data-ng-repeat="connection in openStream " class="un-stream-item">
             <div data-ng-if="connection.type === 'video'">
-                <video autoplay="autoplay" controls="true" data-ng-src="{{connection.stream}}" width="200"></video>
+                <video autoplay="autoplay" controls="true" data-ng-src="{{connection.stream}}"></video>
             </div>
             <div data-ng-if="connection.type === 'audio'">
-                <img ng-src="{{userMap[connection.peerId].image}}" width="80px"
-                     class="profile-image img-thumbnail img-circle img-responsive">
-                <audio class="client-audio" autoplay="autoplay" controls="true" autoplay data-ng-src="{{connection.stream}}"
-                       width="100"></audio>
+                <img ng-src="{{userMap[connection.peerId].image}}">
+                <audio class="client-audio" autoplay="autoplay" controls="true" autoplay
+                       data-ng-src="{{connection.stream}}"></audio>
             </div>
-            <div class="stream-video-cancel" data-ng-click="close(connection.peerId)">
-                <i class="fa fa-times fa-3x"></i>
-            </div>
+            <a href="#" class="cancel-call" data-ng-click="close(connection.peerId)">
+                <i></i>
+            </a>
         </div>
-        <div class="clear-fix"></div>
+        <div class="un-stream-clear"></div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 # Unchatbar Stream
-[![Build Status](https://travis-ci.org/unchatbar/unchatbar-stream.svg?branch=master)](https://travis-ci.org/unchatbar/unchatbar-stream)
+[![Build Status](https://travis-ci.org/unchatbar/unchatbar-stream.svg?branch=redesign)](https://travis-ci.org/unchatbar/unchatbar-stream)
 
 Peer to peer chat application using WebRTC technologies
 
@@ -93,11 +93,18 @@ unStreamConnection.getOwnStream([VIDEO/AUDIO]);
 <un-stream-own></un-stream-own>
 ```
 
-* stream call button for channel
+* stream call video button for channel
 
 >
 ```html
-<un-stream-call data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call>
+<un-stream-call-video data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-video>
+```
+
+* stream call audio button for channel
+
+>
+```html
+<un-stream-call-audio data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-audio>
 ```
 
 

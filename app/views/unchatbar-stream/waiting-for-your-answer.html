@@ -1,24 +1,24 @@
-<div class="row">
-    <div class="col-sx-12">
-        <div data-ng-repeat="connection in streamsWaitingForYourAnswer" class="pull-left waiting-your-container text-center">
-            <div class="profile-img-container">
-                <img ng-src="{{userMap[connection.peerId].image}}" width="80px"
-                     class="profile-image img-thumbnail img-circle img-responsive">
-                <i class="fa fa-spinner fa-pulse fa-spin fa-5x"></i>
-            </div>
-            <div>
-                <div class="pull-left stream-video" data-ng-click="answer(connection.peerId,'audio')">
-                    <i class="fa fa-phone fa-3x"></i>
-                </div>
-                <div class="pull-left stream-video" data-ng-click="answer(connection.peerId,'video')">
-                    <i class="fa fa-video-camera fa-3x"></i>
-                </div>
-                <div class="stream-video-cancel" data-ng-click="close(connection.peerId)">
-                    <i class="fa fa-times fa-3x"></i>
-                </div>
-                <div class="clear-fix"></div>
+<div class="un-stream-waiting-for-your-answer">
+    <div>
+        <div data-ng-repeat="connection in streamsWaitingForYourAnswer">
+            <img ng-src="{{userMap[connection.peerId].image}}">
+            <i class="waiting-icon"></i>
+
+            <p translate>{{userMap[connection.peerId].label}} is calling</p>
+
+            <div class="un-stream-option">
+                <a href="#" class="answer-audio" data-ng-click="answer(connection.peerId,'audio')">
+                    <i></i>
+                </a>
+                <a class="answer-video" data-ng-click="answer(connection.peerId,'video')">
+                    <i></i>
+                </a>
+                <a class="stream-video-cancel" data-ng-click="close(connection.peerId)">
+                    <i></i>
+                </a>
+
+                <div class="un-stream-clear"></div>
             </div>
         </div>
-
     </div>
 </div>

@@ -1,0 +1,23 @@
+/* VENDOR - Default fall-backs and external files.
+========================================================================== */
+@import "bootstrap-sass-official/assets/stylesheets/_bootstrap";
+@import "components-font-awesome/scss/font-awesome";
+
+/* Variable
+========================================================================== */
+@import "_variables";
+
+/* Layout
+========================================================================== */
+@import "_layout";
+
+
+/* components
+========================================================================== */
+
+@import "components/_open";
+@import "components/_call";
+@import "components/_own";
+@import "components/_waiting-for-client-answer";
+@import "components/_waiting-for-your-answer";
+

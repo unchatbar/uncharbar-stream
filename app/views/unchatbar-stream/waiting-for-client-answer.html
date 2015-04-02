@@ -1,17 +1,14 @@
-<div class="row">
-    <div class="col-sx-12">
-        <div data-ng-repeat="connection in streamsWaitingForClientAnswer" class="pull-left waiting-client-container">
-            <div class="profile-img-container">
-                <img ng-src="{{userMap[connection.peerId].image}}" width="80px"
-                     class="profile-image img-thumbnail img-circle img-responsive">
-                <i class="fa fa-spinner fa-pulse fa-spin fa-5x"></i>
-            </div>
-            <p>waiting ...</p>
-            <div class="stream-video-cancel" data-ng-click="close(connection.peerId)">
-                <i class="fa fa-times fa-3x"></i>
-            </div>
+<div class="un-stream-waiting-for-client-answer">
+    <div>
+        <div data-ng-repeat="connection in streamsWaitingForClientAnswer">
+            <img ng-src="{{userMap[connection.peerId].image}}">
 
+            <i class="waiting-icon"></i>
+            <p translate>waiting ...</p>
+            <a href="#" class="stream-video-cancel" data-ng-click="close(connection.peerId)">
+                <i></i>
+            </a>
         </div>
-        <div class="clear-fix"></div>
+        <div class="un-stream-clear"></div>
     </div>
 </div>

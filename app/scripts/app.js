@@ -10,7 +10,8 @@
  */
 angular.module('unchatbar-stream', [
     'constants',
-    'unchatbar-connection'
+    'unchatbar-connection',
+    'gettext'
 
 ]);
 

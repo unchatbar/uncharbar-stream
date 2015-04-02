@@ -1,0 +1,53 @@
+.un-stream-waiting-for-your-answer {
+  @extend .row;
+  > div {
+    @extend .col-sm-12;
+
+  }
+  .un-stream-item {
+    @extend .pull-left, .text-center;
+    margin-left: 10px;
+  }
+  video {
+    width: 200px;
+  }
+  img {
+    @extend .img-circle;
+    height: 46px;
+    width: 46px;
+  }
+  .waiting-icon {
+    @extend .fa, .fa-spinner, .fa-pulse, .fa-spin, .fa-5x
+  }
+  audio {
+    width: 100px;
+  }
+  .un-stream-option {
+
+    .stream-video-cancel {
+      @extend .pull-left;
+      margin-left:10px;
+      i {
+        @extend .fa, .fa-times, .fa-3x;
+      }
+    }
+    .answer-video {
+      @extend .pull-left;
+      margin-left:10px;
+      i {
+        @extend .fa, .fa-video-camera, .fa-3x;
+      }
+    }
+
+    .answer-audio {
+      @extend .pull-left;
+      margin-left:10px;
+      i {
+        @extend .fa, .fa-phone, .fa-3x;
+      }
+    }
+  }
+  .un-stream-clear {
+    @extend .clearfix;
+  }
+}

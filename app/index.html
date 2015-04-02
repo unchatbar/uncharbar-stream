@@ -6,15 +6,9 @@
     <title>unchatbar stream</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <!-- build:css(.) styles/vendor.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/offcanvas.css">
-    <link rel="stylesheet" href="styles/custom.css">
+
+    <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
 </head>
 <body>
@@ -79,9 +73,10 @@
         <div class="row">
             <div class="col-sx-12">
                 <div ng-show="channelList[activeChannel][ownPeerId]">
-                    <un-stream-call data-channel="{{activeChannel}}"
-                                    data-user-map="channelList[activeChannel]"></un-stream-call>
-
+                    <un-stream-call-video data-channel="{{activeChannel}}"
+                                    data-user-map="channelList[activeChannel]"></un-stream-call-video>
+                    <un-stream-call-audio data-channel="{{activeChannel}}"
+                                          data-user-map="channelList[activeChannel]"></un-stream-call-audio>
                 </div>
                 <div ng-show="!channelList[activeChannel][ownPeerId]">
                     you are no member of group {{activeChannel}}
@@ -111,21 +106,23 @@
 <script src="bower_components/peerjs/peer.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/ngstorage/ngStorage.js"></script>
+<script src="bower_components/angular-gettext/dist/angular-gettext.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/app.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/run.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/template.js"></script>
+<script src="bower_components/unchatbar-connection/app/scripts/translations.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/provider/broker.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/provider/data-connection.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/service/peer.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/directive/dialer.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/directive/login.js"></script>
-<script src="bower_components/unchatbar-connection/app/scripts/directive/peerId.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/controller/dialer.js"></script>
 <script src="bower_components/unchatbar-connection/app/scripts/controller/model-password.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
 <!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="scripts/translations.js"></script>
 <script src="scripts/constants.js"></script>
 <script src="scripts/app.js"></script>
 <!-- Provider -->
@@ -135,7 +132,8 @@
 <!-- Controller -->
 <script src="scripts/controller/connection.js"></script>
 <!-- directive -->
-<script src="scripts/directive/call.js"></script>
+<script src="scripts/directive/call-video.js"></script>
+<script src="scripts/directive/call-audio.js"></script>
 <script src="scripts/directive/waiting-for-your-answer.js"></script>
 <script src="scripts/directive/waiting-for-client-answer.js"></script>
 <script src="scripts/directive/own.js"></script>
@@ -147,7 +145,8 @@
 
 <script>
     angular.module('unchatbar-stream').controller('unDataChatDemo',
-            function ($scope, Broker) {
+            function ($scope,gettextCatalog, Broker) {
+                gettextCatalog.setCurrentLanguage('de');
                 $scope.userMap = {
                     'admin': {
                         id: 'admin',

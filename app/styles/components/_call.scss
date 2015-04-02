@@ -1,0 +1,17 @@
+.un-stream-call-video {
+  i {
+    @extend .fa, .fa-video-camera;
+  }
+  a {
+    @extend .btn, .btn-sm;
+  }
+}
+
+.un-stream-call-audio {
+  i {
+    @extend .fa, .fa-phone;
+  }
+  a {
+    @extend .btn, .btn-sm;
+  }
+}
