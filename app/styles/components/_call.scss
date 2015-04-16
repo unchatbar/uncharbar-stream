@@ -3,7 +3,7 @@
     @extend .fa, .fa-video-camera;
   }
   a {
-    @extend .btn, .btn-sm;
+    @extend .btn, .btn-lg;
   }
 }
 
@@ -12,6 +12,6 @@
     @extend .fa, .fa-phone;
   }
   a {
-    @extend .btn, .btn-sm;
+    @extend .btn, .btn-lg;
   }
 }
