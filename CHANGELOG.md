@@ -1,3 +1,7 @@
+## 0.1.2
+Bugfix:
+* Karma tests
+
 ## 0.1.0
 Feature:
 * add sass

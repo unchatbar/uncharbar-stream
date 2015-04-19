@@ -27,7 +27,9 @@ module.exports = function (config) {
             'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
             'bower_components/ngstorage/ngStorage.js',
             'bower_components/angular-gettext/dist/angular-gettext.js',
+            'bower_components/dexie/dist/latest/Dexie.min.js',
             'bower_components/unchatbar-connection/app/scripts/app.js',
+            'bower_components/unchatbar-connection/app/scripts/run.js',
             'bower_components/unchatbar-connection/app/scripts/template.js',
             'bower_components/unchatbar-connection/app/scripts/translations.js',
             'bower_components/unchatbar-connection/app/scripts/provider/broker.js',
@@ -50,6 +52,7 @@ module.exports = function (config) {
         // list of files / patterns to exclude
         exclude: [
             'app/scripts/run.js',
+            'bower_components/unchatbar-*/app/scripts/run.js',
             'app/scripts/config/*.js'
         ],
 
