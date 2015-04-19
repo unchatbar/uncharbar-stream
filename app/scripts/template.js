@@ -52,7 +52,7 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
   $templateCache.put('views/unchatbar-stream/waiting-for-client-answer.html',
     "<div class=\"un-stream-waiting-for-client-answer\">\n" +
     "    <div>\n" +
-    "        <div data-ng-repeat=\"connection in streamsWaitingForClientAnswer\">\n" +
+    "        <div class=\"un-stream-item\" data-ng-repeat=\"connection in streamsWaitingForClientAnswer\">\n" +
     "            <img ng-src=\"{{userMap[connection.peerId].image}}\">\n" +
     "\n" +
     "            <i class=\"waiting-icon\"></i>\n" +
@@ -70,7 +70,7 @@ angular.module('unchatbar-stream').run(['$templateCache', function($templateCach
   $templateCache.put('views/unchatbar-stream/waiting-for-your-answer.html',
     "<div class=\"un-stream-waiting-for-your-answer\">\n" +
     "    <div>\n" +
-    "        <div data-ng-repeat=\"connection in streamsWaitingForYourAnswer\">\n" +
+    "        <div class=\"un-stream-item\" data-ng-repeat=\"connection in streamsWaitingForYourAnswer\">\n" +
     "            <img ng-src=\"{{userMap[connection.peerId].image}}\">\n" +
     "            <i class=\"waiting-icon\"></i>\n" +
     "\n" +
