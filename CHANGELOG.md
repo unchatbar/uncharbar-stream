@@ -1,4 +1,4 @@
-## 0.1.3
+## 0.1.6
 Feature:
 * add custom template Path for directive
 
