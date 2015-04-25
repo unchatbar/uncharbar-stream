@@ -15,7 +15,9 @@ angular.module('unchatbar-stream').directive('unStreamWaitingForClientAnswer', [
         return {
             restrict: 'E',
             replace: false,
-            templateUrl: 'views/unchatbar-stream/waiting-for-client-answer.html',
+            templateUrl: function(element){
+                return element.attr('data-custom-template-url') || 'views/unchatbar-stream/waiting-for-client-answer.html';
+            },
             controller: 'unStreamConnection',
             scope: {
                 userMap: '='

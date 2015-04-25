@@ -90,21 +90,21 @@ unStreamConnection.getOwnStream([VIDEO/AUDIO]);
 
 >
 ```html
-<un-stream-own></un-stream-own>
+<un-stream-own data-custom-template-url="[CUSTOM-TEMPLATEPATH]"></un-stream-own>
 ```
 
 * stream call video button for channel
 
 >
 ```html
-<un-stream-call-video data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-video>
+<un-stream-call-video data-custom-template-url="[CUSTOM-TEMPLATEPATH]" data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-video>
 ```
 
 * stream call audio button for channel
 
 >
 ```html
-<un-stream-call-audio data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-audio>
+<un-stream-call-audio data-custom-template-url="[CUSTOM-TEMPLATEPATH]" data-channel="{{[CHANNELNAME]}}" data-user-map="[USERLIST IN CHANNEL]"></un-stream-call-audio>
 ```
 
 
@@ -112,7 +112,7 @@ unStreamConnection.getOwnStream([VIDEO/AUDIO]);
 
 >
 ```html
-<un-stream-waiting-for-your-answer data-user-map="[USERLIST]"></un-stream-waiting-for-your-answer>
+<un-stream-waiting-for-your-answer data-custom-template-url="[CUSTOM-TEMPLATEPATH]" data-user-map="[USERLIST]"></un-stream-waiting-for-your-answer>
 ```
 
 
@@ -120,7 +120,7 @@ unStreamConnection.getOwnStream([VIDEO/AUDIO]);
 
 >
 ```html
-<un-stream-waiting-for-client-answer data-user-map="[USERLIST]"></un-stream-waiting-for-client-answer>
+<un-stream-waiting-for-client-answer data-custom-template-url="[CUSTOM-TEMPLATEPATH]" data-user-map="[USERLIST]"></un-stream-waiting-for-client-answer>
 ```
 
 

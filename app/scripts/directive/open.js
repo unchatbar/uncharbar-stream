@@ -15,7 +15,9 @@ angular.module('unchatbar-stream').directive('unStreamOpen', [
         return {
             restrict: 'E',
             replace: false,
-            templateUrl: 'views/unchatbar-stream/open.html',
+            templateUrl: function(element){
+                return element.attr('data-custom-template-url') || 'views/unchatbar-stream/open.html';
+            },
             controller: 'unStreamConnection',
             scope: {
                 channel: '@',

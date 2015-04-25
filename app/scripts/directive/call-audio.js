@@ -15,7 +15,9 @@ angular.module('unchatbar-stream').directive('unStreamCallAudio', [
         return {
             restrict: 'E',
             replace: false,
-            templateUrl: 'views/unchatbar-stream/call-audio.html',
+            templateUrl: function(element){
+                return element.attr('data-custom-template-url') || 'views/unchatbar-stream/call-audio.html';
+            },
             controller: 'unStreamConnection',
             scope: {
                 channel: '@',

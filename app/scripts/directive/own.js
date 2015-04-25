@@ -15,7 +15,9 @@ angular.module('unchatbar-stream').directive('unStreamOwn', ['$window',
         return {
             restrict: 'E',
             replace: false,
-            templateUrl: 'views/unchatbar-stream/own.html',
+            templateUrl: function(element){
+                return element.attr('data-custom-template-url') || 'views/unchatbar-stream/own.html';
+            },
             controller: 'unStreamConnection',
             link: function (scope,element) {
                 scope.isVsisible = false;
